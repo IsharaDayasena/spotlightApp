@@ -1,4 +1,4 @@
-import { mutation, MutationCtx, QueryCtx } from "./_generated/server";
+import { mutation, MutationCtx, query, QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 //1- we need to make sure that the webhook event is coming from clerk
@@ -54,3 +54,15 @@ export async function getAuthenticatedUser(ctx:QueryCtx | MutationCtx){
 
         return currentUser;
 }
+
+export const getUserByClerkId = query({
+    args: { clerkId: v.string()},
+    handler: async (ctx , args) => {
+
+        const user = await ctx.db.query("users")
+        .withIndex("by_clerk_id", (q) => q.eq("clerkId", args.clerkId))
+        .unique()
+
+        return user
+    }
+})
