@@ -13,10 +13,10 @@ type CommentModal = {
     postId: Id<"posts">
     visible: boolean,
     onClose: () => void,
-    onCommentAdded: () => void
+   
 }
 
-export default function CommentModal({onClose,onCommentAdded,postId,visible}: CommentModal) {
+export default function CommentModal({onClose,postId,visible}: CommentModal) {
     const [newComment, setNewComment] = useState("")
     const comments =  useQuery(api.comments.getComments, {postId});
     const addComment = useMutation(api.comments.addComment)
@@ -31,7 +31,6 @@ export default function CommentModal({onClose,onCommentAdded,postId,visible}: Co
             })
 
             setNewComment("");
-            onCommentAdded()
         }catch(error){
             console.log("Error adding comment:",error)
         }

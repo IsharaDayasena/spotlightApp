@@ -37,34 +37,40 @@ function NotificationItem({notifications}: any){
   return(
     <View style={styles.notificationItem}>
       <View style={styles.notificationContent}>
-        <Link href={"/notifications"}>
-          <TouchableOpacity style = {styles.avatarContainer}>
+        <Link
+          href={{
+            pathname: "/user/[id]",
+            params: { id: notifications.sender._id }
+          }}
+          asChild
+        >
+          <TouchableOpacity style={styles.avatarContainer}>
             <Image
               source={notifications.sender.image}
-              style = {styles.avatar}
-              contentFit = "cover"
-              transition = {200}
+              style={styles.avatar}
+              contentFit="cover"
+              transition={200}
             />
             <View style={styles.iconBadge}>
               {notifications.type === "like" ? (
-                  <Ionicons name="heart" size={14} color={COLORS.primary} />
-              ): notifications.type === "follow" ?     
-              (
-                  <Ionicons name="person-add" size={14} color={COLORS.primary} />
-              ):(
-                  <Ionicons name="chatbubble" size={14} color={COLORS.primary} />
-
-              )
-            
-            }
+                <Ionicons name="heart" size={14} color={COLORS.primary} />
+              ) : notifications.type === "follow" ? (
+                <Ionicons name="person-add" size={14} color={COLORS.primary} />
+              ) : (
+                <Ionicons name="chatbubble" size={14} color={COLORS.primary} />
+              )}
             </View>
-                  </TouchableOpacity>
-            </Link>
+          </TouchableOpacity>
+        </Link>
 
 
 
         <View style = {styles.notificationInfo}>
-          <Link href={"/notifications"} asChild>
+          <Link href={{
+            pathname: "/user/[id]",
+            params: { id: notifications.sender._id }
+          }}
+          asChild>
               <TouchableOpacity>
                 <Text style = {styles.username}>{notifications.sender.userName}</Text>
               </TouchableOpacity>

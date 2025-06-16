@@ -1,6 +1,8 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, MutationCtx, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getAuthenticatedUser } from "./users";
+import { use } from "react";
+import { Id } from "./_generated/dataModel";
 
 export const generateUploadUrl = mutation(async (ctx) => {
   const identity = await ctx.auth.getUserIdentity();
@@ -189,13 +191,40 @@ export const deletePost = mutation({
       await ctx.db.delete(args.postId)
 
       //delete associated notifications
-      // const notifications = await ctx.db
-      //   .query("notifications")
-      //   .withIndex("by_post")
+      const notifications = await ctx.db
+        .query("notifications")
+        .withIndex("by_post", (q) => q.eq("postId", args.postId))
+        .collect();
+
+        for (const notification of notifications){
+          await ctx.db.delete(notification._id)
+        }
 
       //decrement user's post count by 1
       await ctx.db.patch(currentUser._id,{
         posts: Math.max(0,(currentUser.posts || 1) - 1)
       })
+
   }
 })
+
+export const getPostByUser = query({
+  args:{
+    userId: v.optional(v.id("users")),
+  },
+  handler: async (ctx,args) => {
+    const user = args.userId ? await ctx.db.get(args.userId) : await getAuthenticatedUser(ctx);
+
+    if(!user) throw new Error("User not Found");
+    
+    const posts = await ctx.db
+      .query("posts")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId || user._id))
+      .collect()
+
+      return posts
+  
+  }
+})
+
+
