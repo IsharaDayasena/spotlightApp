@@ -1,4 +1,11 @@
-import { Text, TouchableOpacity, View, FlatList, ScrollView, RefreshControl } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  FlatList,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { styles } from "../../styles/feed.styled";
 import { useAuth } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,27 +18,22 @@ import React, { useState } from "react";
 import Loader from "@/components/Loader";
 import Post from "@/components/Post";
 
-
-
 export default function Index() {
-
   const { signOut } = useAuth();
-  const [refreshing, setRefreshing] = useState(false)
+  const [refreshing, setRefreshing] = useState(false);
 
-  const posts = useQuery(api.posts.getFeedPosts)
+  const posts = useQuery(api.posts.getFeedPosts);
 
-  if(posts === undefined) return <Loader/>
+  if (posts === undefined) return <Loader />;
 
-  if(posts.length === 0) return <NoPostFound/>
+  if (posts.length === 0) return <NoPostFound />;
 
-  const onRefresh = () =>{
-    setRefreshing(true)
+  const onRefresh = () => {
+    setRefreshing(true);
     setTimeout(() => {
-      setRefreshing(false)
-    },2000)
-  }
-
-
+      setRefreshing(false);
+    }, 2000);
+  };
 
   return (
     <View style={styles.container}>
@@ -42,13 +44,13 @@ export default function Index() {
           <Ionicons name="log-out-outline" size={24} color={COLORS.white} />
         </TouchableOpacity>
       </View>
-
+      {/*Posts */}
       <FlatList
         data={posts}
-        renderItem={({item}) => <Post post={item}/> }
+        renderItem={({ item }) => <Post post={item} />}
         keyExtractor={(item) => item._id}
-        showsVerticalScrollIndicator = {false}
-        contentContainerStyle ={{paddingBottom: 60}}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 60 }}
         ListHeaderComponent={<StoriesSection />}
         refreshControl={
           <RefreshControl
@@ -58,40 +60,33 @@ export default function Index() {
           />
         }
       />
-
     </View>
   );
 }
 
-  const StoriesSection = () =>{
-    return(
-    
-             
-        <ScrollView horizontal showsHorizontalScrollIndicator= {false} style={styles.storiesContainer}>
-        
-              {STORIES.map((story) =>(
-                  <Story key={story.id} story={story}/>
-              ))}
-
-
-        </ScrollView> 
-
-    )
-  }
-
-
+const StoriesSection = () => {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={styles.storiesContainer}
+    >
+      {STORIES.map((story) => (
+        <Story key={story.id} story={story} />
+      ))}
+    </ScrollView>
+  );
+};
 
 const NoPostFound = () => (
   <View
-    style ={{
-      flex:1,
+    style={{
+      flex: 1,
       backgroundColor: COLORS.background,
       justifyContent: "center",
-      alignItems:"center"
+      alignItems: "center",
     }}
   >
-    <Text style={{ fontSize: 20, color: COLORS.primary}}>No Posts Yet</Text>
-
+    <Text style={{ fontSize: 20, color: COLORS.primary }}>No Posts Yet</Text>
   </View>
-)
-
+);

@@ -38,7 +38,7 @@ export default function CommentModal({onClose,postId,visible}: CommentModal) {
   return (
     <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose} >
         <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : "height"}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.modalContainer}        
         >
             <View style = {styles.modalHeader}>

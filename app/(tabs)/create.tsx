@@ -7,23 +7,23 @@ import {
   ActivityIndicator,
   ScrollView,
   TextInput,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useUser } from '@clerk/clerk-expo';
-import { useState } from 'react';
-import { styles } from '../../styles/create.styles';
-import { Ionicons } from '@expo/vector-icons';
-import { COLORS } from '../../constants/theme';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system'
-import { Image } from 'expo-image';
-import { useMutation } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+} from "react-native";
+import { useRouter } from "expo-router";
+import { useUser } from "@clerk/clerk-expo";
+import { useState } from "react";
+import { styles } from "../../styles/create.styles";
+import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../../constants/theme";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { Image } from "expo-image";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function CreateScreen() {
   const router = useRouter();
   const { user } = useUser();
-  const [caption, setCaption] = useState('');
+  const [caption, setCaption] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isSharing, setIsSharing] = useState(false);
 
@@ -40,37 +40,38 @@ export default function CreateScreen() {
     }
   };
 
-  const generateUploadUrl = useMutation(api.posts.generateUploadUrl)
-  const createPost = useMutation(api.posts.createPost)
+  const generateUploadUrl = useMutation(api.posts.generateUploadUrl);
+  const createPost = useMutation(api.posts.createPost);
 
   const handleShare = async () => {
-    if(!selectedImage) return;
+    if (!selectedImage) return;
 
-    try{
+    try {
       setIsSharing(true);
-      const uploadUrl = await generateUploadUrl()
+      const uploadUrl = await generateUploadUrl();
 
-      const uploadResult =  await FileSystem.uploadAsync(uploadUrl,
-        selectedImage,{
-          httpMethod:"POST",
+      const uploadResult = await FileSystem.uploadAsync(
+        uploadUrl,
+        selectedImage,
+        {
+          httpMethod: "POST",
           uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-          mimeType:"image/jpeg"
+          mimeType: "image/jpeg",
         }
-      )
-      if (uploadResult.status !== 200) throw new Error("Upload Failed")
+      );
+      if (uploadResult.status !== 200) throw new Error("Upload Failed");
 
-      const {storageId} = JSON.parse(uploadResult.body)
-      await createPost({storageId,caption})
+      const { storageId } = JSON.parse(uploadResult.body);
+      await createPost({ storageId, caption });
 
-      setSelectedImage(null)
-      setCaption("")
+      setSelectedImage(null);
+      setCaption("");
 
-      router.push("/(tabs)")
-
-    }catch(error){
-      console.log("Error sharing post")
-    }finally{
-      setIsSharing(false)
+      router.push("/(tabs)");
+    } catch (error) {
+      console.log("Error sharing post", error);
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -85,7 +86,10 @@ export default function CreateScreen() {
           <View style={{ width: 28 }} />
         </View>
 
-        <TouchableOpacity style={styles.emptyImageContainer} onPress={pickImage}>
+        <TouchableOpacity
+          style={styles.emptyImageContainer}
+          onPress={pickImage}
+        >
           <Ionicons name="image-outline" size={48} color={COLORS.grey} />
           <Text style={styles.emptyImageText}>Tap to select an image</Text>
         </TouchableOpacity>
@@ -95,9 +99,9 @@ export default function CreateScreen() {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <View style={styles.contentContainer}>
         {/* Header */}
@@ -105,7 +109,7 @@ export default function CreateScreen() {
           <TouchableOpacity
             onPress={() => {
               setSelectedImage(null);
-              setCaption('');
+              setCaption("");
             }}
             disabled={isSharing}
           >
@@ -117,7 +121,10 @@ export default function CreateScreen() {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>New Post</Text>
           <TouchableOpacity
-            style={[styles.shareButton, isSharing && styles.shareButtonDisabled]}
+            style={[
+              styles.shareButton,
+              isSharing && styles.shareButtonDisabled,
+            ]}
             onPress={handleShare}
             disabled={isSharing || !selectedImage}
           >
@@ -133,51 +140,48 @@ export default function CreateScreen() {
           contentContainerStyle={styles.scrollContent}
           bounces={false}
           keyboardShouldPersistTaps="handled"
-          contentOffset={{x:0,y:100}}
+          contentOffset={{ x: 0, y: 100 }}
         >
           <View style={[styles.content, isSharing && styles.contentDisabled]}>
             {/*Image section*/}
             <View style={styles.imageSection}>
-            <Image
-              source={{ uri: selectedImage }}
-              style={styles.previewImage}
-              contentFit="cover"
-              transition={200}
-            />
-            <TouchableOpacity
-              style = {styles.changeImageButton}
-              onPress={pickImage}
-              disabled = {isSharing}
-            >
-              <Ionicons name="image-outline" size={20} color={COLORS.white}/>
-              <Text style={styles.changeImageText}>Change</Text>
-
-            </TouchableOpacity>
-             </View>
-            {/*Input section */}
-              <View style={styles.inputSection}>
-                <View style={styles.captionContainer}>
-                    <Image
-                      source={user?.imageUrl}
-                      style={styles.userAvatar}
-                      contentFit="cover"
-                      transition={200}
-                    />
-                    <TextInput
-                      style = {styles.captionInput}
-                      placeholder="Write a caption..."
-                      placeholderTextColor={COLORS.grey}
-                      multiline
-                      value={caption}
-                      onChangeText={setCaption}
-                      editable={!isSharing}
-                    />
-                </View>
-
-              </View>
-
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.previewImage}
+                contentFit="cover"
+                transition={200}
+              />
+              <TouchableOpacity
+                style={styles.changeImageButton}
+                onPress={pickImage}
+                disabled={isSharing}
+              >
+                <Ionicons name="image-outline" size={20} color={COLORS.white} />
+                <Text style={styles.changeImageText}>Change</Text>
+              </TouchableOpacity>
             </View>
-         
+            
+            {/*Input section */}
+            <View style={styles.inputSection}>
+              <View style={styles.captionContainer}>
+                <Image
+                  source={user?.imageUrl}
+                  style={styles.userAvatar}
+                  contentFit="cover"
+                  transition={200}
+                />
+                <TextInput
+                  style={styles.captionInput}
+                  placeholder="Write a caption..."
+                  placeholderTextColor={COLORS.grey}
+                  multiline
+                  value={caption}
+                  onChangeText={setCaption}
+                  editable={!isSharing}
+                />
+              </View>
+            </View>
+          </View>
         </ScrollView>
       </View>
     </KeyboardAvoidingView>
